@@ -21,6 +21,36 @@ jobs:
       - name: test with coverage (min -> 80%)
         run: mvn -B clean verify '-Dtest=school.hei.patrimoine.modele.**'
 
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+            path: ~/.sonar/cache
+            key: ${{ runner.os }}-sonar
+            restore-keys: ${{ runner.os }}-sonar
+
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+                path: ~/.m2
+                key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+                restore-keys: ${{ runner.os }}-m2
+
+      - name: Report Sonar
+        env:
+            GITHUB_TOKEN: ${{ secrets.GTB_TOKEN }}  # Needed to get PR information, if any
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \   
+                  -Dsonar.host.url=https://sonarcloud.io \
+                  -Dsonar.organization=${{vars.SONAR_OGR}} \
+                  -Dsonar.projectKey=${{vars.SONAR_PJ_KEY}} \  
+                  -Dsonar.token=${{secrets.SONAR_TOKEN}} \    
+                  -Dsonar.sources=src/main/java \
+                  -Dsonar.tests=src/test/java \     
+                  -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \ 
+                  -Dsonar.inclusions=school/hei/patrimoine/modele/**
+
+
   format:
     runs-on: ubuntu-latest
     timeout-minutes: 20
