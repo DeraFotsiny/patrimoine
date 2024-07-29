@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
+          -Dsonar.projectKey=${{ vars.SONAR_PJ_KEY }} \
           -Dsonar.token=${{ env.SONAR_TOKEN }} \
           -Dsonar.sources=src/main/java \
           -Dsonar.tests=src/test/java \
